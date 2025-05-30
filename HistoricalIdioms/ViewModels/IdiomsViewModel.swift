@@ -21,9 +21,28 @@ class IdiomsViewModel: ObservableObject {
         }
     }
     
-    // 在实际应用中，可以从JSON文件或网络加载数据
+    // 从JSON文件加载数据
     func loadIdioms() {
-        // 这里使用示例数据，实际应用中可以从JSON加载
-        // idioms = loadFromJSON("idioms")
+        // 首先尝试从JSON加载，如果失败则使用示例数据
+        if let loadedIdioms = loadFromJSON("idioms") {
+            idioms = loadedIdioms
+        }
+    }
+    
+    // 从JSON文件加载成语数据
+    private func loadFromJSON(_ filename: String) -> [Idiom]? {
+        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
+            print("无法找到 \(filename).json 文件")
+            return nil
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            return try decoder.decode([Idiom].self, from: data)
+        } catch {
+            print("解析JSON失败: \(error)")
+            return nil
+        }
     }
 }
